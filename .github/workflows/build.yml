@@ -1,0 +1,30 @@
+name: Build GBA ROM
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: devkitpro/devkitarm:latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Compile GBA ROM
+        run: |
+          export DEVKITPRO=/opt/devkitpro
+          export DEVKITARM=/opt/devkitpro/devkitARM
+          export PATH=$DEVKITPRO/tools/bin:$DEVKITARM/bin:$PATH
+          make clean && make
+
+      - name: Upload GBA ROM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pokemon-uttarakhand-gba
+          path: pokemon_uttarakhand.gba
